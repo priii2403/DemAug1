@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, Linking } from 'react-native';
-import { isValidImei } from './src/utils/imei';
-import { useCameraPermission } from './src/hooks/useCameraPermission';
-import ImeiInput from './src/components/ImeiInput';
-import ImeiScanner from './src/components/ImeiScanner';
+import { View, Alert, Linking, StyleSheet } from 'react-native';
+import ImeiInput from '../components/ImeiInput';
+import ImeiScanner from '../components/ImeiScanner';
+import { isValidImei } from '../utils/imei';
+import { useCameraPermission } from '../hooks/useCameraPermission';
 
-const App: React.FC = () => {
+const ImeiScreen = () => {
   const [imei, setImei] = useState('');
   const [scanning, setScanning] = useState(false);
   const { requestPermission } = useCameraPermission();
 
   useEffect(() => {
-    const handleDeepLink = async (event?: { url: string }) => {
-      const url = event?.url || (await Linking.getInitialURL());
+    const handleDeepLink = async (event) => {
+      const url = event?.url || await Linking.getInitialURL();
       if (!url) return;
 
       try {
         const parsedUrl = new URL(url);
         const imeiFromLink = parsedUrl.searchParams.get('imei');
-
         if (imeiFromLink && isValidImei(imeiFromLink)) {
           setImei(imeiFromLink);
           Alert.alert('Deep Link', `IMEI set from deep link: ${imeiFromLink}`);
@@ -35,10 +34,9 @@ const App: React.FC = () => {
     return () => subscription.remove();
   }, []);
 
-  const handleManualChange = (text: string) => {
+  const handleManualChange = (text) => {
     const numericText = text.replace(/[^0-9]/g, '');
     setImei(numericText);
-
     if (numericText.length === 15 && !isValidImei(numericText)) {
       Alert.alert('Warning', 'IMEI must be a valid 15-digit number.');
     }
@@ -50,10 +48,9 @@ const App: React.FC = () => {
     }
   };
 
-  const handleScanSuccess = (e: { data: string }) => {
+  const handleScanSuccess = (e) => {
     const scannedData = e.data;
     setScanning(false);
-
     if (isValidImei(scannedData)) {
       setImei(scannedData);
       Alert.alert('Success', `Scanned IMEI: ${scannedData}`);
@@ -83,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default ImeiScreen;
