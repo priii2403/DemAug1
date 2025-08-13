@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, Linking } from 'react-native';
-import { isValidImei } from './src/utils/imei';
+
 import { useCameraPermission } from './src/hooks/useCameraPermission';
 import ImeiInput from './src/components/ImeiInput';
 import ImeiScanner from './src/components/ImeiScanner';
+import { isValidImei } from './src/Utils/imei';
 
 const App: React.FC = () => {
   const [imei, setImei] = useState('');
